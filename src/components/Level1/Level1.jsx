@@ -2,8 +2,8 @@
 
 import React from 'react';
 
-import { buildMSTFromEdges, delaunayEdges, generatePartitionedRooms, generatePassages } from '@/lib/utils';
-import Room from '../Room/Room';
+import { buildMSTFromEdges, delaunayEdges, generatePartitionedRooms } from '@/lib/utils';
+import RoomStandart from '../Room/Room';
 import Corridor from '../Corridor/Corridor';
 
 const GRID_SIZE = 80;
@@ -24,7 +24,7 @@ function Level1({}) {
   return (
     <group position={[ -GRID_SIZE / 2, 0, -GRID_SIZE / 2 ]}>
       {rooms?.map((room, i) => (
-        <Room key={i} { ...room } />
+        <RoomStandart key={i} { ...room } />
       ))}
       {edges?.map((edge, i) => (
         <Corridor key={i} from={edge[0]} to={edge[1]} />

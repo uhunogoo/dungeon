@@ -7,7 +7,6 @@ import { Suspense } from 'react';
 
 import Scene from '@/components/Scene/Scene';
 import SceneManager from '@/components/SceneManager/SceneManager';
-import Providers from '@/components/Providers/Providers';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -35,14 +34,12 @@ export default async function RootLayout({ children }) {
           <Link href="?level=1">Level 1</Link>
           <Link href="?level=2">Level 2</Link>
         </nav>
-        <Providers>
-          { children }
-          <Suspense fallback={<div>Loading...</div>}>
-            <Scene>
-              <SceneManager />
-            </Scene>
-          </Suspense>
-        </Providers>
+        { children }
+        <Suspense fallback={<div>Loading...</div>}>
+          <Scene>
+            <SceneManager />
+          </Scene>
+        </Suspense>
       </body>
     </html>
   );
