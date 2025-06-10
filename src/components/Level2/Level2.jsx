@@ -1,115 +1,94 @@
+import { Instance, Instances } from '@react-three/drei';
 import React from 'react';
-import { RoomAngle, RoomBig, RoomStandart, RoomStraight } from '../Room/Room';
-import useMazeGenerator from '@/hooks/useMazeGenerator';
-// import * as ROT from 'rot-js';
-// import { range } from '@/lib/utils';
+import useSWR from 'swr';
+import Road from '../Road/Road';
 
-const ROWS = 81;
-const COLS = 81;
+const TILE_SIZE = 32; // Assuming each tile is 32x32 units
+const ENDPOINT = '/tile-map/level-1.json';
 
-const COLORS = {
-  FLOOR: 'gray',
-  WALL: 'darkgray',
-  DOOR: 'brown',
-  ROOM_HIGHLIGHT: 'blue', // For debugging or highlighting
-};
-
-const templates = [
-  {
-    name: 'RoomStandart',
-    sizes: [ 5, 1, 5 ],
-    doors: [
-      { direction: 'N', localPosition: [ 0, 0.5, -2.5 ] },
-      { direction: 'S', localPosition: [ 0, 0.5, 2.5 ] },
-      { direction: 'E', localPosition: [ 2.5, 0.5, 0 ] },
-      { direction: 'W', localPosition: [ -2.5, 0.5, 0 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomStandart />,
-  },
-  {
-    name: 'RoomStraight_NS',
-    sizes: [ 5, 1, 5 ],
-    doors: [
-      { direction: 'N', localPosition: [ 0, 0.5, -2.5 ] },
-      { direction: 'S', localPosition: [ 0, 0.5, 2.5 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomStraight />,
-  },
-  {
-    name: 'RoomStraight_EW',
-    sizes: [ 5, 1, 5 ],
-    doors: [
-      { direction: 'E', localPosition: [ 2.5, 0.5, 0 ] },
-      { direction: 'W', localPosition: [ -2.5, 0.5, 0 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomStraight rotation-y={ Math.PI * 0.5 } />,
-  },
-  {
-    name: 'RoomAngle_NE',
-    sizes: [ 5, 1, 5 ],
-    doors: [
-      { direction: 'N', localPosition: [ 0, 0.5, -2.5 ] },
-      { direction: 'E', localPosition: [ 2.5, 0.5, 0 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomAngle />,
-  },
-  {
-    name: 'RoomAngle_NW',
-    sizes: [ 5, 1, 5 ],
-    doors: [
-      { direction: 'N', localPosition: [ 0, 0.5, -2.5 ] },
-      { direction: 'W', localPosition: [ -2.5, 0.5, 0 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomAngle rotation-y={ Math.PI / 2 } />,
-  },
-  {
-    name: 'RoomAngle_SW',
-    sizes: [ 5, 1, 5 ],
-    doors: [
-      { direction: 'S', localPosition: [ 0, 0.5, 2.5 ] },
-      { direction: 'W', localPosition: [ -2.5, 0.5, 0 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomAngle rotation-y={ Math.PI } />,
-  },
-  {
-    name: 'RoomAngle_SE',
-    sizes: [ 5, 1, 5 ],
-    doors: [
-      { direction: 'S', localPosition: [ 0, 0.5, 2.5 ] },
-      { direction: 'E', localPosition: [ 2.5, 0.5, 0 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomAngle rotation-y={ Math.PI * 1.5 } />,
-  },
-  {
-    name: 'RoomBig',
-    sizes: [ 15, 1, 10 ],
-    doors: [
-      { direction: 'N', localPosition: [ 0, 0.5, -7.5 ] },
-    ],
-    position: [ 0, 0, 0 ],
-    component: <RoomBig />,
-  },
-];
+async function fetcher(endpoint) {
+  const response = await fetch(endpoint);
+  const json = await response.json();
+  
+  return json;
+}
 
 function Level2() {
-  const dungeon = useMazeGenerator( templates, 20 );
+  const { data, error } = useSWR(ENDPOINT, fetcher);
 
   return (
     <group>
-      { dungeon.map( ( room ) => {
-        return <group key={ room.id } position={ room.position }>
-          { room.room.component }
-        </group>
-      }) }
+      {/* { data && <LevelGround data={ data?.layers || null } /> } */}
+      { data && <Road map={ data } /> }
+      { data && <Buildings data={ data?.layers } /> }
     </group>
   )
 }
+
+function Buildings({ data }) {
+  const map = React.useMemo(() => {
+    const buildings = data.find(layer => layer.name === 'objects');
+    return buildings ? buildings : [];
+  }, [data]);
+  
+  return (
+    <group position={[-32, 0, -32]}>
+      { map?.objects?.map((house, index) => {
+        const { width, height, x, y } = house;
+        const tileSizeX = width / TILE_SIZE;
+        const tileSizeZ = height / TILE_SIZE; 
+        const tilePositionX = Math.floor( (x / TILE_SIZE) + tileSizeX / 2 );
+        const tilePositionZ = Math.floor( (y / TILE_SIZE) + tileSizeZ / 2 );
+        return (
+          
+          <mesh 
+            key={index} 
+            position={[ tilePositionX, 1, tilePositionZ ]} 
+            scale={[ tileSizeX, 2, tileSizeZ ]}
+          >
+            <boxGeometry args={[1, 1, 1]} />
+            <meshBasicMaterial color="blue" />
+          </mesh>
+        );
+      })}
+    </group>
+  )
+}
+
+function LevelGround({ data }) {
+  const map = React.useMemo(() => {
+    const grass = data.find(layer => layer.name === 'grass');
+    return grass ? grass : { data: [], width: 0, height: 0 };
+  }, [data]);
+
+  const positions = React.useMemo(() => {
+    const tiles = [];
+    map.data.forEach((tile, index) => {
+      if (tile === 1) return; // Пропускаємо пусті
+      const x = (index % map.width) - map.width / 2;
+      const z = Math.floor(index / map.width) - map.height / 2;
+      tiles.push([x, 0.5, z]);
+    });
+    return tiles;
+  }, [map]);
+
+  return (
+    <group>
+      <mesh scale={[map.width, 1, map.height]} position={[0, -0.5, 0]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshBasicMaterial color="green" />
+      </mesh>
+
+      <Instances limit={positions.length} geometry={undefined} material={undefined}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshBasicMaterial color="red" />
+        {positions.map((pos, i) => (
+          <Instance key={i} position={pos} />
+        ))}
+      </Instances>
+    </group>
+  );
+}
+  
 
 export default Level2;

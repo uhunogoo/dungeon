@@ -2,9 +2,9 @@
 
 import React from 'react';
 
-import { buildMSTFromEdges, delaunayEdges, generatePartitionedRooms } from '@/lib/utils';
-import RoomStandart from '../Room/Room';
-import Corridor from '../Corridor/Corridor';
+// import { buildMSTFromEdges, delaunayEdges, generatePartitionedRooms } from '@/lib/utils';
+// import RoomStandart from '../Room/Room';
+// import Corridor from '../Corridor/Corridor';
 
 const GRID_SIZE = 80;
 const ROWS = 6;

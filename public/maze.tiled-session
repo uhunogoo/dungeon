@@ -1,0 +1,61 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map..tmj",
+    "expandedProjectPaths": [
+        ".",
+        "tile-map",
+        "tile-map/tsx"
+    ],
+    "fileStates": {
+        "": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "map..tmj": {
+            "scale": 0.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1153,
+                "y": 1244
+            }
+        },
+        "map..tmj#roads": {
+            "scaleInDock": 1
+        },
+        "map.tmj": {
+            "expandedObjectLayers": [
+                4
+            ],
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 473.3333333333333,
+                "y": 424
+            }
+        },
+        "tile-map/tsx/roads.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        }
+    },
+    "last.exportedFilePath": "C:/Users/polie/Desktop/reactTesting/maze-game/public/tile-map",
+    "last.imagePath": "C:/Users/polie/Desktop/reactTesting/maze-game/public/tile-map/tiles/pixel-art-top-down-basic",
+    "map.height": 30,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "json",
+    "openFiles": [
+        "map..tmj",
+        "tile-map/tsx/roads.tsx"
+    ],
+    "project": "maze.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "tile-map/tsx/roads.tsx",
+        "map..tmj",
+        "map.tmj"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}
