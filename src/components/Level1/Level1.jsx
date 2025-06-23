@@ -1,36 +1,67 @@
 'use client'
 
 import React from 'react';
-
-// import { buildMSTFromEdges, delaunayEdges, generatePartitionedRooms } from '@/lib/utils';
-// import RoomStandart from '../Room/Room';
-// import Corridor from '../Corridor/Corridor';
-
-const GRID_SIZE = 80;
-const ROWS = 6;
-const COLS = 6;
+import Bounds from '@/components/Bounds/Bounds';
+import Button from '@/components/Button/Button';
+import { useGLTF } from '@react-three/drei';
+import { RigidBody } from '@react-three/rapier';
 
 function Level1({}) {
-  const { rooms, edges } = React.useMemo(() => {
-    const rooms = generatePartitionedRooms( GRID_SIZE, ROWS, COLS );
-    const delaunayEdgesResult = delaunayEdges( rooms );
-    const mstEdges = buildMSTFromEdges( rooms, delaunayEdgesResult );
-    return {
-      rooms,
-      edges: mstEdges
-    }
-  }, []);
-
   return (
-    <group position={[ -GRID_SIZE / 2, 0, -GRID_SIZE / 2 ]}>
-      {rooms?.map((room, i) => (
-        <RoomStandart key={i} { ...room } />
-      ))}
-      {edges?.map((edge, i) => (
-        <Corridor key={i} from={edge[0]} to={edge[1]} />
-      ))}
+    <group>
+      <Platform position={[ 0, -0.05, 0]}/>
+      <Platform position={[ 1, -0.05, 0]}/>
+      <Bounds
+        args={[ 63.38 * 0.5, 0.1, 17.62 ]}
+        position={[ 0, -0.05, 0 ]}
+      />
+      <Button />
+      <RigidBody type="fixed" colliders="trimesh" position={ [ 0, 0, 0 ] } restitution={ 0.2 } friction={ 0 }>
+        <LevelMap />
+        {/* <primitive object={ scene } /> */}
+      </RigidBody>
     </group>
   )
 }
+
+function LevelMap() {
+  const { nodes } = useGLTF('/assets/game-level.glb');
+  const [ material, setMaterial ] = React.useState( null ); 
+  return (
+    <>
+      <meshStandardNodeMaterial ref={ setMaterial } color="white" />
+      <group>
+        <mesh
+          geometry={ nodes.outline_wall.geometry }
+          material={ material } 
+        />
+        <mesh 
+          geometry={ nodes.wall_14.geometry }
+          material={ material}
+        />
+        <mesh 
+          geometry={ nodes.wall_28.geometry }
+          material={ material}
+        />
+        <mesh 
+          geometry={ nodes.wall_42.geometry }
+          material={ material}
+        />
+      </group>
+    </>
+  )
+}
+
+function Platform({ ...delegated }) {
+  return (
+    <mesh {...delegated}>
+      <boxGeometry args={[1, 0.1, 1]} />
+      <meshStandardNodeMaterial color="lightblue" />
+    </mesh>
+  );
+}
+
+
+useGLTF.preload('/assets/game-level.glb');
 
 export default Level1;
